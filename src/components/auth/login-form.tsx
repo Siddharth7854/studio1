@@ -11,8 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Briefcase, LogIn } from 'lucide-react';
+import { LogIn } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 const loginSchema = z.object({
   employeeId: z.string().min(1, { message: "Employee ID is required" }),
@@ -54,9 +55,15 @@ const LoginForm: React.FC = () => {
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <Briefcase className="h-16 w-16 text-primary" />
+          <Image 
+            src="https://placehold.co/64x64.png" 
+            alt="CLMS BUIDCO Logo" 
+            width={64} 
+            height={64}
+            data-ai-hint="logo buidco" 
+          />
         </div>
-        <CardTitle className="text-3xl font-headline text-primary">LeavePilot</CardTitle>
+        <CardTitle className="text-3xl font-headline text-primary">CLMS BUIDCO</CardTitle>
         <CardDescription>Sign in to manage your leaves</CardDescription>
       </CardHeader>
       <CardContent>

@@ -10,8 +10,8 @@ import { LeaveProvider } from '@/contexts/leave-context'; // Added
 // const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'LeavePilot',
-  description: 'Casual Leave Management System',
+  title: 'CLMS BUIDCO',
+  description: 'Casual Leave Management System for BUIDCO',
 };
 
 export default function RootLayout({

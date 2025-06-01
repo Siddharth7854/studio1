@@ -4,7 +4,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { Briefcase } from 'lucide-react';
+import Image from 'next/image';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -23,8 +23,15 @@ export default function HomePage() {
   return (
     <div className="flex h-screen items-center justify-center bg-background">
       <div className="flex flex-col items-center">
-        <Briefcase className="h-20 w-20 text-primary animate-pulse" />
-        <p className="mt-6 text-2xl font-semibold text-primary">LeavePilot</p>
+        <Image 
+          src="https://placehold.co/80x80.png" 
+          alt="CLMS BUIDCO Logo" 
+          width={80} 
+          height={80} 
+          className="animate-pulse"
+          data-ai-hint="logo buidco" 
+        />
+        <p className="mt-6 text-2xl font-semibold text-primary">CLMS BUIDCO</p>
         <p className="mt-2 text-muted-foreground">Redirecting...</p>
       </div>
     </div>

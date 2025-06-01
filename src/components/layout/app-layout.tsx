@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { LayoutDashboard, CalendarPlus, Bell, Briefcase, UserPlus, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -27,8 +28,15 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center">
-          <Briefcase className="h-16 w-16 text-primary animate-pulse" />
-          <p className="mt-4 text-lg font-medium text-foreground">Loading LeavePilot...</p>
+          <Image 
+            src="https://placehold.co/64x64.png" 
+            alt="CLMS BUIDCO Logo" 
+            width={64} 
+            height={64} 
+            className="animate-pulse"
+            data-ai-hint="logo buidco" 
+          />
+          <p className="mt-4 text-lg font-medium text-foreground">Loading CLMS BUIDCO...</p>
         </div>
       </div>
     );
@@ -39,8 +47,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       <Sidebar className="bg-card border-r" collapsible="icon">
         {/* SidebarHeader is part of Sidebar in the new version. */}
         <div className="p-4 flex items-center gap-2 border-b">
-            <Briefcase className="h-8 w-8 text-primary" />
-            <h1 className="text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">LeavePilot</h1>
+            <Image 
+              src="https://placehold.co/32x32.png" 
+              alt="CLMS BUIDCO Logo" 
+              width={32} 
+              height={32}
+              data-ai-hint="logo buidco" 
+            />
+            <h1 className="text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">CLMS BUIDCO</h1>
         </div>
         <SidebarContent>
           <SidebarMenu>

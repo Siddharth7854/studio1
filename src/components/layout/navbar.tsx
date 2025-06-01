@@ -15,10 +15,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserCircle, LogOut, Bell, Settings, Briefcase } from 'lucide-react';
+import { UserCircle, LogOut, Bell, Settings } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
+import Image from 'next/image';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
@@ -41,8 +42,14 @@ const Navbar: React.FC = () => {
            <SidebarTrigger className="md:hidden" />
           {!isMobile && (
             <Link href="/dashboard" className="flex items-center gap-2">
-              <Briefcase className="h-7 w-7 text-primary" />
-              <span className="text-xl font-semibold text-primary">LeavePilot</span>
+              <Image 
+                src="https://placehold.co/28x28.png" 
+                alt="CLMS BUIDCO Logo" 
+                width={28} 
+                height={28}
+                data-ai-hint="logo buidco" 
+              />
+              <span className="text-xl font-semibold text-primary">CLMS BUIDCO</span>
             </Link>
           )}
         </div>
