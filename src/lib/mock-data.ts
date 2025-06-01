@@ -1,8 +1,9 @@
 import type { User, LeaveType, LeaveBalance, LeaveRequest, Notification } from '@/types';
 
 export const MOCK_USERS: User[] = [
-  { id: '1', employeeId: 'EMP001', name: 'Alice Wonderland', email: 'alice@example.com' },
-  { id: '2', employeeId: 'EMP002', name: 'Bob The Builder', email: 'bob@example.com' },
+  { id: '1', employeeId: 'EMP001', name: 'Alice Wonderland', email: 'alice@example.com', isAdmin: false },
+  { id: '2', employeeId: 'EMP002', name: 'Bob The Builder', email: 'bob@example.com', isAdmin: false },
+  { id: 'admin001', employeeId: 'ADMIN001', name: 'Admin User', email: 'admin@example.com', isAdmin: true }, // Added Admin User
 ];
 
 export const MOCK_LEAVE_TYPES: LeaveType[] = [

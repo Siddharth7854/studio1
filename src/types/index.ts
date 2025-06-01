@@ -4,6 +4,7 @@ export interface User {
   employeeId: string;
   name: string;
   email?: string;
+  isAdmin?: boolean; // Added isAdmin flag
   // password will not be stored in frontend user object
 }
 
