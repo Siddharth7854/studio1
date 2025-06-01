@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import type { LeaveRequest, LeaveRequestStatus } from '@/types';
 import { useLeave } from '@/contexts/leave-context';
 import { useAuth } from '@/hooks/use-auth';
@@ -19,7 +19,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { format, differenceInDays } from 'date-fns';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardList, CheckCircle, XCircle, Clock, Loader2, MessageSquare, RefreshCw } from 'lucide-react';
+import { ClipboardList, CheckCircle, XCircle, Clock, Loader2, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog,
@@ -33,7 +33,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Label } from '@/components/ui/label';
-import { MOCK_USERS } from '@/lib/mock-data'; // Added for fetching admin name
+import { MOCK_USERS } from '@/lib/mock-data';
 
 const getStatusVariant = (status: LeaveRequest['status']) => {
   switch (status) {
@@ -51,30 +51,28 @@ const getStatusVariant = (status: LeaveRequest['status']) => {
 const ManageLeaveTable: React.FC = () => {
   const { user } = useAuth();
   const { 
-    getLeaveRequestsForAdmin, 
+    leaveRequests: allLeaveRequests, // Get all leave requests from context
     updateLeaveRequestStatus, 
     isLoading: leaveContextLoading 
   } = useLeave();
   const { toast } = useToast();
 
-  const [requests, setRequests] = useState<LeaveRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<LeaveRequest | null>(null);
   const [actionType, setActionType] = useState<'Approve' | 'Reject' | null>(null);
   const [adminRemarks, setAdminRemarks] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const fetchRequests = React.useCallback(() => {
-    setIsLoading(true);
-    if (!leaveContextLoading) {
-      setRequests(getLeaveRequestsForAdmin());
-    }
-    setIsLoading(false);
-  }, [leaveContextLoading, getLeaveRequestsForAdmin]);
+  const sortedRequests = useMemo(() => {
+    return [...allLeaveRequests].sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+  }, [allLeaveRequests]);
 
-  useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests]);
+  const pendingRequests = useMemo(() => {
+    return sortedRequests.filter(req => req.status === 'Pending');
+  }, [sortedRequests]);
+
+  const processedRequests = useMemo(() => {
+    return sortedRequests.filter(req => req.status !== 'Pending');
+  }, [sortedRequests]);
 
   const openActionDialog = (request: LeaveRequest, type: 'Approve' | 'Reject') => {
     setSelectedRequest(request);
@@ -93,7 +91,7 @@ const ManageLeaveTable: React.FC = () => {
         title: `Request ${actionType === 'Approve' ? 'Approved' : 'Rejected'}`,
         description: result.message,
       });
-      fetchRequests(); // Refresh the list
+      // No need to manually fetchRequests, context update will re-render
     } else {
       toast({
         title: "Error",
@@ -107,7 +105,7 @@ const ManageLeaveTable: React.FC = () => {
     setAdminRemarks('');
   };
   
-  if (isLoading || leaveContextLoading) {
+  if (leaveContextLoading) { // Only rely on context loading state for initial data
     return (
       <Card className="shadow-lg">
         <CardHeader>
@@ -123,10 +121,6 @@ const ManageLeaveTable: React.FC = () => {
     );
   }
 
-  const pendingRequests = requests.filter(req => req.status === 'Pending');
-  const processedRequests = requests.filter(req => req.status !== 'Pending');
-
-
   return (
     <>
       <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
@@ -138,9 +132,7 @@ const ManageLeaveTable: React.FC = () => {
             </CardTitle>
             <CardDescription>Review and act on pending leave requests.</CardDescription>
           </div>
-          <Button variant="outline" size="icon" onClick={fetchRequests} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-          </Button>
+          {/* Refresh button can be added back if a hard refresh mechanism is needed beyond context updates */}
         </CardHeader>
         <CardContent>
           {pendingRequests.length === 0 ? (
@@ -272,5 +264,3 @@ const ManageLeaveTable: React.FC = () => {
 };
 
 export default ManageLeaveTable;
-
-    

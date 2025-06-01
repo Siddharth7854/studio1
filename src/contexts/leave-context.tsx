@@ -14,7 +14,7 @@ interface LeaveContextType {
   leaveRequests: LeaveRequest[];
   notifications: Notification[];
   submitLeaveRequest: (newRequestData: Omit<LeaveRequest, 'id' | 'employeeId' | 'employeeName' | 'requestedAt' | 'status'>) => Promise<{ success: boolean; message: string }>;
-  getLeaveRequestsForAdmin: () => LeaveRequest[];
+  // getLeaveRequestsForAdmin removed, component will filter/sort
   getLeaveRequestsForUser: (employeeId: string) => LeaveRequest[];
   updateLeaveRequestStatus: (requestId: string, newStatus: LeaveRequestStatus, adminRemarks?: string) => Promise<{ success: boolean; message: string }>;
   getNotificationsForUser: (userId: string) => Notification[];
@@ -27,18 +27,16 @@ interface LeaveContextType {
 export const LeaveContext = createContext<LeaveContextType | undefined>(undefined);
 
 export const LeaveProvider = ({ children }: { children: ReactNode }) => {
-  const { user, sessionUsers } = useAuth(); // sessionUsers from AuthContext
+  const { user, sessionUsers } = useAuth();
   const [leaveRequests, setLeaveRequests] = useState<LeaveRequest[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsLoading(true);
-    // Load leave requests
     const storedLeaveRequests = localStorage.getItem(LEAVE_REQUESTS_STORAGE_KEY);
     if (storedLeaveRequests) {
       try {
-        // Dates need to be parsed from string to Date objects
         const parsedRequests = JSON.parse(storedLeaveRequests).map((req: any) => ({
           ...req,
           startDate: new Date(req.startDate),
@@ -57,7 +55,6 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(LEAVE_REQUESTS_STORAGE_KEY, JSON.stringify(MOCK_LEAVE_REQUESTS));
     }
 
-    // Load notifications
     const storedNotifications = localStorage.getItem(NOTIFICATIONS_STORAGE_KEY);
     if (storedNotifications) {
       try {
@@ -104,7 +101,6 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
     const updatedRequests = [...leaveRequests, fullRequest];
     saveLeaveRequests(updatedRequests);
 
-    // Create notifications for all admin users
     const adminUsers = sessionUsers.filter(u => u.isAdmin);
     const newAdminNotifications: Notification[] = adminUsers.map(admin => ({
       id: `notif-admin-${Date.now()}-${Math.random().toString(36).substr(2, 5)}-${admin.id}`,
@@ -120,11 +116,6 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
     saveNotifications([...notifications, ...newAdminNotifications]);
 
     return { success: true, message: "Leave request submitted successfully." };
-  };
-
-  const getLeaveRequestsForAdmin = () => {
-    // Returns all requests; admin page can filter by status
-    return [...leaveRequests].sort((a,b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
   };
   
   const getLeaveRequestsForUser = (employeeId: string) => {
@@ -142,7 +133,7 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
       ...originalRequest,
       status: newStatus,
       updatedAt: new Date(),
-      approvedBy: user.id, // ID of admin taking action
+      approvedBy: user.id,
       adminRemarks: adminRemarks,
     };
 
@@ -150,7 +141,6 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
     updatedRequests[requestIndex] = updatedRequest;
     saveLeaveRequests(updatedRequests);
 
-    // Create notification for the employee
     const duration = differenceInDays(originalRequest.endDate, originalRequest.startDate) + 1;
     const employeeNotification: Notification = {
       id: `notif-emp-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
@@ -158,7 +148,7 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
       message: `Your ${originalRequest.leaveTypeName} request (${duration} day(s), ${format(originalRequest.startDate, 'MMM dd')} - ${format(originalRequest.endDate, 'MMM dd')}) has been ${newStatus}. ${adminRemarks ? `Admin remarks: ${adminRemarks}` : ''}`.trim(),
       date: new Date(),
       read: false,
-      link: '/dashboard', // Or specific link to view the request
+      link: '/dashboard',
       type: 'leave_status_update',
       relatedRequestId: requestId,
     };
@@ -196,7 +186,6 @@ export const LeaveProvider = ({ children }: { children: ReactNode }) => {
       leaveRequests, 
       notifications,
       submitLeaveRequest,
-      getLeaveRequestsForAdmin,
       getLeaveRequestsForUser,
       updateLeaveRequestStatus,
       getNotificationsForUser,
@@ -215,5 +204,6 @@ export const useLeave = () => {
   if (context === undefined) {
     throw new Error('useLeave must be used within a LeaveProvider');
   }
-  return context; // <-- Fixed this line
+  return context;
 };
+
