@@ -6,7 +6,7 @@ import { useForm, Controller, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Not used directly, but Calendar uses it
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -21,6 +21,8 @@ import { format, differenceInDays, isBefore, startOfDay } from 'date-fns';
 import { suggestLeaveReason } from '@/ai/flows/suggest-leave-reason';
 import { rewordLeaveRequest } from '@/ai/flows/reword-leave-request';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/use-auth'; // Added
+import { useLeave } from '@/contexts/leave-context'; // Added
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,8 +33,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
-
+} from "@/components/ui/alert-dialog";
 
 const leaveRequestSchema = z.object({
   leaveTypeId: z.string().min(1, "Leave type is required"),
@@ -43,7 +44,7 @@ const leaveRequestSchema = z.object({
   message: "End date cannot be before start date",
   path: ["endDate"],
 })
-.refine(data => differenceInDays(data.endDate, data.startDate) >= 0, {
+.refine(data => differenceInDays(data.endDate, data.startDate) >= 0, { // Ensure duration is at least 0 for same day
   message: "Leave duration must be at least one day (select same start/end for one day)",
   path: ["endDate"],
 })
@@ -52,7 +53,6 @@ const leaveRequestSchema = z.object({
   path: ["startDate"],
 });
 
-
 type LeaveRequestFormInputs = z.infer<typeof leaveRequestSchema>;
 
 const LeaveRequestForm: React.FC = () => {
@@ -60,8 +60,10 @@ const LeaveRequestForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(''); // 'suggest' or 'reword'
   const { toast } = useToast();
+  const { user } = useAuth(); // Get current user
+  const { submitLeaveRequest } = useLeave(); // Use leave context
 
-  const { control, handleSubmit, watch, setValue, getValues, formState: { errors } } = useForm<LeaveRequestFormInputs>({
+  const { control, handleSubmit, watch, setValue, getValues, reset, formState: { errors } } = useForm<LeaveRequestFormInputs>({
     resolver: zodResolver(leaveRequestSchema),
     defaultValues: {
       reason: "",
@@ -75,7 +77,6 @@ const LeaveRequestForm: React.FC = () => {
   const endDate = watch("endDate");
 
   useEffect(() => {
-    // Simulate fetching leave types
     setLeaveTypes(MOCK_LEAVE_TYPES);
   }, []);
   
@@ -117,29 +118,44 @@ const LeaveRequestForm: React.FC = () => {
     }
   };
 
-  const onSubmit: SubmitHandler<LeaveRequestFormInputs> = async (data) => {
+  const processSubmit: SubmitHandler<LeaveRequestFormInputs> = async (data) => {
+    if (!user) {
+        toast({ title: "Error", description: "You must be logged in to submit a request.", variant: "destructive" });
+        return;
+    }
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Leave Request Data:", data);
     
-    // In a real app, you'd get the leave type name from its ID
-    const leaveTypeName = leaveTypes.find(lt => lt.id === data.leaveTypeId)?.name || 'Unknown Leave';
-    const duration = differenceInDays(data.endDate, data.startDate) + 1;
+    const selectedLeaveType = leaveTypes.find(lt => lt.id === data.leaveTypeId);
+    if (!selectedLeaveType) {
+        toast({ title: "Error", description: "Invalid leave type selected.", variant: "destructive" });
+        setIsSubmitting(false);
+        return;
+    }
 
-    toast({
-      title: "Leave Request Submitted!",
-      description: `${leaveTypeName} for ${duration} day(s) from ${format(data.startDate, 'PPP')} to ${format(data.endDate, 'PPP')} has been submitted.`,
-      duration: 5000,
-    });
-    
-    // Reset form (optional)
-    // control._reset(); // This might not be available or recommended way to reset. Use reset from useForm.
-    setValue("leaveTypeId", "");
-    setValue("startDate", undefined);
-    setValue("endDate", undefined);
-    setValue("reason", "");
+    const requestData = {
+        leaveTypeId: data.leaveTypeId,
+        leaveTypeName: selectedLeaveType.name,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        reason: data.reason,
+    };
 
+    const result = await submitLeaveRequest(requestData);
+
+    if (result.success) {
+        toast({
+        title: "Leave Request Submitted!",
+        description: result.message,
+        duration: 5000,
+        });
+        reset(); // Reset form fields
+    } else {
+        toast({
+            title: "Submission Failed",
+            description: result.message,
+            variant: "destructive"
+        });
+    }
     setIsSubmitting(false);
   };
 
@@ -159,7 +175,7 @@ const LeaveRequestForm: React.FC = () => {
         </CardTitle>
         <CardDescription>Fill out the form below to submit your leave request. Use our AI tools to help craft your reason!</CardDescription>
       </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(processSubmit)}>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -168,7 +184,7 @@ const LeaveRequestForm: React.FC = () => {
                 name="leaveTypeId"
                 control={control}
                 render={({ field }) => (
-                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value || ""} >
                     <SelectTrigger id="leaveTypeId" className={cn(errors.leaveTypeId && "border-destructive")}>
                       <SelectValue placeholder="Select leave type" />
                     </SelectTrigger>
@@ -293,8 +309,8 @@ const LeaveRequestForm: React.FC = () => {
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button type="button" variant="default" disabled={isSubmitting || Object.keys(errors).length > 0} className="px-8 py-3 text-base">
-                 {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                 {/* Icon will be handled by the button type="submit" below */}
+                 Confirm & Submit Request
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
@@ -312,9 +328,9 @@ const LeaveRequestForm: React.FC = () => {
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleSubmit(onSubmit)} disabled={isSubmitting}>
-                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                  Confirm & Submit
+                <AlertDialogAction onClick={handleSubmit(processSubmit)} disabled={isSubmitting}>
+                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4"/>}
+                  {isSubmitting ? 'Submitting...' : 'Submit Request'}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -322,7 +338,3 @@ const LeaveRequestForm: React.FC = () => {
         </CardFooter>
       </form>
     </Card>
-  );
-};
-
-export default LeaveRequestForm;

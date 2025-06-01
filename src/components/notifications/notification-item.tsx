@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from 'react';
@@ -7,7 +6,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { ArrowRight, Mail, AlertTriangle, CheckCircle2 } from 'lucide-react'; // Example icons
+import { ArrowRight, Mail, AlertTriangle, CheckCircle2, FileText } from 'lucide-react';
 
 interface NotificationItemProps {
   notification: NotificationType;
@@ -16,13 +15,22 @@ interface NotificationItemProps {
 
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMarkAsRead }) => {
   const getIcon = () => {
-    if (notification.message.toLowerCase().includes('approved')) {
-      return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+    switch (notification.type) {
+      case 'leave_status_update':
+        if (notification.message.toLowerCase().includes('approved')) {
+          return <CheckCircle2 className="h-5 w-5 text-green-500" />;
+        }
+        if (notification.message.toLowerCase().includes('rejected')) {
+          return <AlertTriangle className="h-5 w-5 text-red-500" />;
+        }
+        return <Mail className="h-5 w-5 text-primary" />;
+      case 'new_leave_request':
+        return <FileText className="h-5 w-5 text-blue-500" />;
+      case 'system_message':
+        return <AlertTriangle className="h-5 w-5 text-orange-500" />;
+      default:
+        return <Mail className="h-5 w-5 text-primary" />;
     }
-    if (notification.message.toLowerCase().includes('rejected')) {
-      return <AlertTriangle className="h-5 w-5 text-red-500" />;
-    }
-    return <Mail className="h-5 w-5 text-primary" />;
   };
 
   return (
@@ -41,7 +49,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
           {formatDistanceToNow(new Date(notification.date), { addSuffix: true })}
         </p>
       </div>
-      <div className="shrink-0 flex flex-col items-end gap-2">
+      <div className="shrink-0 flex flex-col sm:flex-row items-end sm:items-center gap-2">
         {notification.link && (
           <Link href={notification.link} passHref>
             <Button variant="ghost" size="sm" className="h-auto py-1 px-2 text-xs">

@@ -1,8 +1,10 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/contexts/auth-context';
+import { LeaveProvider } from '@/contexts/leave-context'; // Added
 
 // If using next/font, uncomment this and remove the <link> tags in <head>
 // const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
@@ -26,8 +28,10 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <AuthProvider>
-          {children}
-          <Toaster />
+          <LeaveProvider> {/* Added LeaveProvider */}
+            {children}
+            <Toaster />
+          </LeaveProvider>
         </AuthProvider>
       </body>
     </html>

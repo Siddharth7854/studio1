@@ -7,9 +7,7 @@ export interface User {
   isAdmin?: boolean;
   designation?: string;
   profilePhotoUrl?: string;
-  // password will not be stored in frontend user object for existing users,
-  // but will be captured for new user creation by admin
-  password?: string; // Added for capturing new user password during creation
+  password?: string;
 }
 
 export interface LeaveType {
@@ -28,6 +26,8 @@ export type LeaveRequestStatus = 'Pending' | 'Approved' | 'Rejected';
 
 export interface LeaveRequest {
   id: string;
+  employeeId: string; // Added
+  employeeName: string; // Added
   leaveTypeId: string;
   leaveTypeName: string;
   startDate: Date;
@@ -36,12 +36,19 @@ export interface LeaveRequest {
   status: LeaveRequestStatus;
   requestedAt: Date;
   updatedAt?: Date;
+  approvedBy?: string; // Optional: ID of admin who approved/rejected
+  adminRemarks?: string; // Optional: Remarks from admin
 }
+
+export type NotificationType = 'new_leave_request' | 'leave_status_update' | 'system_message';
 
 export interface Notification {
   id: string;
+  userId: string; // Added: To whom this notification belongs
   message: string;
   date: Date;
   read: boolean;
   link?: string;
+  type?: NotificationType; // Optional: to categorize notifications
+  relatedRequestId?: string; // Optional: link to a leave request
 }

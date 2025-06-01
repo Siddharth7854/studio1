@@ -4,6 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
+import { useLeave } from '@/contexts/leave-context'; // Added
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -14,13 +15,17 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserCircle, LogOut, Bell, Settings, Briefcase, PanelLeft } from 'lucide-react';
+import { UserCircle, LogOut, Bell, Settings, Briefcase } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Badge } from '@/components/ui/badge'; // Added
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
+  const { getUnreadNotificationCount, isLoading: leaveLoading } = useLeave(); // Added
   const isMobile = useIsMobile();
+
+  const unreadCount = user && !leaveLoading ? getUnreadNotificationCount(user.id) : 0; // Added
 
   const getInitials = (name: string) => {
     const names = name.split(' ');
@@ -42,9 +47,14 @@ const Navbar: React.FC = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          <Link href="/notifications">
-            <Button variant="ghost" size="icon" aria-label="Notifications">
+          <Link href="/notifications" passHref>
+            <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
               <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Badge>
+              )}
             </Button>
           </Link>
           {user && (
@@ -52,7 +62,7 @@ const Navbar: React.FC = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={`https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name} data-ai-hint="avatar person" />
+                    <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name} data-ai-hint="avatar person" />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -82,11 +92,4 @@ const Navbar: React.FC = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-        </div>
-      </div>
-    </header>
-  );
-};
-
-export default Navbar;
+          

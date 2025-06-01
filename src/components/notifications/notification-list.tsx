@@ -4,42 +4,72 @@
 import React, { useState, useEffect } from 'react';
 import type { Notification as NotificationType } from '@/types';
 import NotificationItem from './notification-item';
-import { MOCK_NOTIFICATIONS } from '@/lib/mock-data'; // Using mock data for now
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { BellRing, CheckCheck } from 'lucide-react';
+import { BellRing, CheckCheck, Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
+import { useLeave } from '@/contexts/leave-context';
 
 const NotificationList: React.FC = () => {
-  const [notifications, setNotifications] = useState<NotificationType[]>([]);
+  const { user } = useAuth();
+  const { 
+    notifications: allNotifications, 
+    getNotificationsForUser, 
+    markNotificationAsRead, 
+    markAllNotificationsAsRead,
+    isLoading: leaveContextLoading 
+  } = useLeave();
+  
+  const [displayNotifications, setDisplayNotifications] = useState<NotificationType[]>([]);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   useEffect(() => {
-    // Simulate fetching notifications
-    setNotifications(MOCK_NOTIFICATIONS.sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-  }, []);
+    if (user && !leaveContextLoading) {
+      const userNotifications = getNotificationsForUser(user.id);
+      setDisplayNotifications(userNotifications);
+    }
+  }, [user, allNotifications, getNotificationsForUser, leaveContextLoading]);
+
 
   const handleMarkAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(n => (n.id === id ? { ...n, read: true } : n))
-    );
-    // In a real app, also update backend
+    if (user) {
+      markNotificationAsRead(id);
+    }
   };
 
   const handleMarkAllAsRead = () => {
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-     // In a real app, also update backend
+    if (user) {
+      markAllNotificationsAsRead(user.id);
+    }
   };
 
-  const filteredNotifications = notifications.filter(n => 
+  const filteredNotifications = displayNotifications.filter(n => 
     filter === 'unread' ? !n.read : true
   );
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = displayNotifications.filter(n => !n.read).length;
+  const totalCount = displayNotifications.length;
+
+  if (leaveContextLoading || !user) {
+    return (
+      <Card className="w-full max-w-3xl mx-auto shadow-xl">
+        <CardHeader>
+          <CardTitle className="text-2xl font-headline flex items-center gap-2">
+            <Loader2 className="h-7 w-7 text-primary animate-spin" />
+            Loading Notifications...
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-8 text-center text-muted-foreground">
+          Please wait while we fetch your notifications.
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full max-w-3xl mx-auto shadow-xl">
       <CardHeader className="border-b">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div>
             <CardTitle className="text-2xl font-headline flex items-center gap-2">
               <BellRing className="h-7 w-7 text-primary" />
@@ -55,7 +85,7 @@ const NotificationList: React.FC = () => {
         </div>
         <div className="mt-4 flex gap-2">
           <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>
-            All ({notifications.length})
+            All ({totalCount})
           </Button>
           <Button variant={filter === 'unread' ? 'default' : 'outline'} onClick={() => setFilter('unread')}>
             Unread ({unreadCount})
@@ -75,12 +105,12 @@ const NotificationList: React.FC = () => {
           </div>
         ) : (
           <div className="p-8 text-center text-muted-foreground">
-            {filter === 'unread' ? 'No unread notifications.' : 'No notifications yet.'}
+            {filter === 'unread' && totalCount > 0 ? 'No unread notifications.' : 
+             filter === 'unread' && totalCount === 0 ? 'No notifications yet.' :
+             filter === 'all' && totalCount === 0 ? 'No notifications yet.' : 
+             'No notifications match your filter.'}
           </div>
         )}
       </CardContent>
     </Card>
   );
-};
-
-export default NotificationList;

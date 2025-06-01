@@ -5,10 +5,9 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
-import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader } from '@/components/ui/sidebar';
-import { LayoutDashboard, CalendarPlus, Bell, Briefcase, UserPlus } from 'lucide-react';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
+import { LayoutDashboard, CalendarPlus, Bell, Briefcase, UserPlus, ClipboardList } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -38,10 +37,11 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <SidebarProvider defaultOpen>
       <Sidebar className="bg-card border-r" collapsible="icon">
-        <SidebarHeader className="p-4 flex items-center gap-2">
+        {/* SidebarHeader is part of Sidebar in the new version. */}
+        <div className="p-4 flex items-center gap-2 border-b">
             <Briefcase className="h-8 w-8 text-primary" />
             <h1 className="text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">LeavePilot</h1>
-        </SidebarHeader>
+        </div>
         <SidebarContent>
           <SidebarMenu>
             <SidebarMenuItem>
@@ -69,14 +69,24 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               </Link>
             </SidebarMenuItem>
             {user?.isAdmin && (
-              <SidebarMenuItem>
-                <Link href="/admin/create-employee" passHref legacyBehavior>
-                  <SidebarMenuButton tooltip="Create Employee" isActive={router.pathname === '/admin/create-employee'}>
-                    <UserPlus />
-                    <span>Create Employee</span>
-                  </SidebarMenuButton>
-                </Link>
-              </SidebarMenuItem>
+              <>
+                <SidebarMenuItem>
+                  <Link href="/admin/create-employee" passHref legacyBehavior>
+                    <SidebarMenuButton tooltip="Create Employee" isActive={router.pathname === '/admin/create-employee'}>
+                      <UserPlus />
+                      <span>Create Employee</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/admin/manage-leave" passHref legacyBehavior>
+                    <SidebarMenuButton tooltip="Manage Leave" isActive={router.pathname === '/admin/manage-leave'}>
+                      <ClipboardList />
+                      <span>Manage Leave</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+              </>
             )}
           </SidebarMenu>
         </SidebarContent>
