@@ -1,9 +1,37 @@
+
 import type { User, LeaveType, LeaveBalance, LeaveRequest, Notification } from '@/types';
 
 export const MOCK_USERS: User[] = [
-  { id: '1', employeeId: 'EMP001', name: 'Alice Wonderland', email: 'alice@example.com', isAdmin: false },
-  { id: '2', employeeId: 'EMP002', name: 'Bob The Builder', email: 'bob@example.com', isAdmin: false },
-  { id: 'admin001', employeeId: 'ADMIN001', name: 'Admin User', email: 'admin@example.com', isAdmin: true }, // Added Admin User
+  { 
+    id: '1', 
+    employeeId: 'EMP001', 
+    name: 'Alice Wonderland', 
+    email: 'alice@example.com', 
+    isAdmin: false,
+    designation: 'Software Engineer',
+    profilePhotoUrl: 'https://placehold.co/100x100.png?text=AW',
+    password: 'password1' // Example password for mock user
+  },
+  { 
+    id: '2', 
+    employeeId: 'EMP002', 
+    name: 'Bob The Builder', 
+    email: 'bob@example.com', 
+    isAdmin: false,
+    designation: 'Project Manager',
+    profilePhotoUrl: 'https://placehold.co/100x100.png?text=BB',
+    password: 'password2' // Example password for mock user
+  },
+  { 
+    id: 'admin001', 
+    employeeId: 'ADMIN001', 
+    name: 'Admin User', 
+    email: 'admin@example.com', 
+    isAdmin: true,
+    designation: 'System Administrator',
+    profilePhotoUrl: 'https://placehold.co/100x100.png?text=AU',
+    password: 'adminpassword123' // Admin password
+  },
 ];
 
 export const MOCK_LEAVE_TYPES: LeaveType[] = [
@@ -76,4 +104,3 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
     link: '/dashboard'
   },
 ];
-

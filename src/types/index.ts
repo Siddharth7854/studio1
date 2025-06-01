@@ -4,8 +4,12 @@ export interface User {
   employeeId: string;
   name: string;
   email?: string;
-  isAdmin?: boolean; // Added isAdmin flag
-  // password will not be stored in frontend user object
+  isAdmin?: boolean;
+  designation?: string;
+  profilePhotoUrl?: string;
+  // password will not be stored in frontend user object for existing users,
+  // but will be captured for new user creation by admin
+  password?: string; // Added for capturing new user password during creation
 }
 
 export interface LeaveType {
@@ -41,4 +45,3 @@ export interface Notification {
   read: boolean;
   link?: string;
 }
-

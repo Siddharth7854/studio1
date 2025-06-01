@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarTrigger, SidebarHeader } from '@/components/ui/sidebar';
-import { LayoutDashboard, CalendarPlus, Bell, Briefcase } from 'lucide-react';
+import { LayoutDashboard, CalendarPlus, Bell, Briefcase, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -68,6 +68,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
+            {user?.isAdmin && (
+              <SidebarMenuItem>
+                <Link href="/admin/create-employee" passHref legacyBehavior>
+                  <SidebarMenuButton tooltip="Create Employee" isActive={router.pathname === '/admin/create-employee'}>
+                    <UserPlus />
+                    <span>Create Employee</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
