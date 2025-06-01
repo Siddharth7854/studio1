@@ -41,3 +41,4 @@ export interface Notification {
   read: boolean;
   link?: string;
 }
+
