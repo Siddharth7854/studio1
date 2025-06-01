@@ -338,3 +338,7 @@ const LeaveRequestForm: React.FC = () => {
         </CardFooter>
       </form>
     </Card>
+  );
+};
+
+export default LeaveRequestForm;

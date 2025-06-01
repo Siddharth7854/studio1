@@ -114,3 +114,6 @@ const NotificationList: React.FC = () => {
       </CardContent>
     </Card>
   );
+};
+
+export default NotificationList;

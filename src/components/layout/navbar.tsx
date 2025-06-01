@@ -4,7 +4,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/use-auth';
-import { useLeave } from '@/contexts/leave-context'; // Added
+import { useLeave } from '@/contexts/leave-context';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -18,19 +18,20 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { UserCircle, LogOut, Bell, Settings, Briefcase } from 'lucide-react';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Badge } from '@/components/ui/badge'; // Added
+import { Badge } from '@/components/ui/badge';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
-  const { getUnreadNotificationCount, isLoading: leaveLoading } = useLeave(); // Added
+  const { getUnreadNotificationCount, isLoading: leaveLoading } = useLeave();
   const isMobile = useIsMobile();
 
-  const unreadCount = user && !leaveLoading ? getUnreadNotificationCount(user.id) : 0; // Added
+  const unreadCount = user && !leaveLoading ? getUnreadNotificationCount(user.id) : 0;
 
-  const getInitials = (name: string) => {
+  const getInitials = (name: string = "") => {
+    if (!name) return '';
     const names = name.split(' ');
-    if (names.length === 1) return names[0][0].toUpperCase();
-    return names[0][0].toUpperCase() + names[names.length - 1][0].toUpperCase();
+    if (names.length === 1) return names[0][0]?.toUpperCase() || '';
+    return (names[0][0]?.toUpperCase() || '') + (names[names.length - 1][0]?.toUpperCase() || '');
   };
 
   return (
@@ -92,4 +93,11 @@ const Navbar: React.FC = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          
+          )}
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
