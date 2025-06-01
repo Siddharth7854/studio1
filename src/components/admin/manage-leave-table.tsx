@@ -237,18 +237,19 @@ const ManageLeaveTable: React.FC = () => {
               <AlertDialogDescription>
                 You are about to {actionType?.toLowerCase()} the leave request for <strong>{selectedRequest.employeeName}</strong> from <br />
                 {format(new Date(selectedRequest.startDate), 'PPP')} to {format(new Date(selectedRequest.endDate), 'PPP')} ({differenceInDays(new Date(selectedRequest.endDate), new Date(selectedRequest.startDate)) + 1} day(s)).
-                <div className="mt-4">
-                  <Label htmlFor="adminRemarks">Admin Remarks (Optional)</Label>
-                  <Textarea 
-                    id="adminRemarks"
-                    value={adminRemarks}
-                    onChange={(e) => setAdminRemarks(e.target.value)}
-                    placeholder="Add remarks for the employee..."
-                    className="mt-1"
-                  />
-                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
+            
+            <div className="space-y-2 py-2"> {/* Moved remarks div here and adjusted spacing */}
+              <Label htmlFor="adminRemarks">Admin Remarks (Optional)</Label>
+              <Textarea 
+                id="adminRemarks"
+                value={adminRemarks}
+                onChange={(e) => setAdminRemarks(e.target.value)}
+                placeholder="Add remarks for the employee..."
+              />
+            </div>
+            
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isSubmitting}>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleActionSubmit} disabled={isSubmitting} className={actionType === 'Approve' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}>
@@ -264,3 +265,6 @@ const ManageLeaveTable: React.FC = () => {
 };
 
 export default ManageLeaveTable;
+
+
+    
