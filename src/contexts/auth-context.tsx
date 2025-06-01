@@ -17,6 +17,7 @@ interface AuthContextType {
   logout: () => void;
   addUser: (newUser: User) => Promise<{ success: boolean; message: string }>;
   isAdmin: boolean;
+  sessionUsers: User[]; // Added sessionUsers to the type
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -115,7 +116,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       login, 
       logout, 
       addUser, 
-      isAdmin: !!user?.isAdmin 
+      isAdmin: !!user?.isAdmin,
+      sessionUsers // Added sessionUsers to the provider value
     }}>
       {children}
     </AuthContext.Provider>
