@@ -215,4 +215,5 @@ export const useLeave = () => {
   if (context === undefined) {
     throw new Error('useLeave must be used within a LeaveProvider');
   }
-  return
+  return context; // <-- Fixed this line
+};
