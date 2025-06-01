@@ -15,18 +15,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserCircle, LogOut, Bell, Settings } from 'lucide-react';
+import { UserCircle, LogOut, Bell, Settings as SettingsIcon } from 'lucide-react'; // Renamed Settings to SettingsIcon
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation'; // Added for programmatic navigation
+import { useRouter } from 'next/navigation';
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { getUnreadNotificationCount, isLoading: leaveLoading } = useLeave();
   const isMobile = useIsMobile();
-  const router = useRouter(); // Added
+  const router = useRouter();
 
   const unreadCount = user && !leaveLoading ? getUnreadNotificationCount(user.id) : 0;
 
@@ -42,8 +42,7 @@ const Navbar: React.FC = () => {
   };
   
   const handleSettingsClick = () => {
-    // Potentially route to a different settings page or another section of profile
-    router.push('/profile'); // For now, also points to profile
+    router.push('/settings'); // Changed to navigate to /settings
   };
 
 
@@ -102,7 +101,7 @@ const Navbar: React.FC = () => {
                   <span>Profile</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleSettingsClick}>
-                  <Settings className="mr-2 h-4 w-4" />
+                  <SettingsIcon className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
