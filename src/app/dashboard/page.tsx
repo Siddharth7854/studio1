@@ -1,7 +1,7 @@
 
 "use client";
 
-import React from 'react';
+import React, { use } from 'react'; // Import use
 import AppLayout from '@/components/layout/app-layout';
 import LeaveBalanceCard from '@/components/leave/leave-balance-card';
 import LeaveHistoryTable from '@/components/leave/leave-history-table';
@@ -11,11 +11,26 @@ import Link from 'next/link';
 import { PlusCircle } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
 
-export default function DashboardPage() {
+// If this page were to receive searchParams as a prop from a Server Component:
+interface DashboardPageProps {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default function DashboardPage({ searchParams }: DashboardPageProps) {
   const { user } = useAuth();
   // In a real app, fetch this data based on the logged-in user
   const leaveBalances = MOCK_INITIAL_LEAVE_BALANCES;
   const leaveRequests = MOCK_LEAVE_REQUESTS;
+
+  // If searchParams were passed as a prop and you needed to iterate or access keys directly,
+  // Next.js suggests unwrapping with React.use().
+  // const unwrappedSearchParams = searchParams ? use(searchParams) : {};
+  // Example usage (though useSearchParams hook is generally preferred in client components):
+  // if (unwrappedSearchParams && Object.keys(unwrappedSearchParams).length > 0) {
+  //   console.log("Dashboard searchParams:", unwrappedSearchParams);
+  // }
+  // For client components, prefer using the useSearchParams hook from 'next/navigation'
+  // e.g., import { useSearchParams } from 'next/navigation'; const searchParamsHook = useSearchParams();
 
   return (
     <AppLayout>
