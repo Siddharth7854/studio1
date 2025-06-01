@@ -6,7 +6,10 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle, Settings as SettingsIcon, ListChecks } from 'lucide-react';
+import { 
+  LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle, 
+  Settings as SettingsIcon, ListChecks, SlidersHorizontal, BarChart3, LifeBuoy, BookOpen
+} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -103,6 +106,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+              <Link href="/company-policies" passHref legacyBehavior>
+                <SidebarMenuButton tooltip="Company Policies" isActive={router.pathname === '/company-policies'}>
+                  <BookOpen />
+                  <span>Company Policies</span>
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
             {user?.isAdmin && (
               <>
                 <SidebarMenuItem>
@@ -126,6 +137,30 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     <SidebarMenuButton tooltip="Employee Leave Overview" isActive={router.pathname === '/admin/employee-leave-overview'}>
                       <ListChecks />
                       <span>Employee Leaves</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                 <SidebarMenuItem>
+                  <Link href="/admin/system-settings" passHref legacyBehavior>
+                    <SidebarMenuButton tooltip="System Settings" isActive={router.pathname === '/admin/system-settings'}>
+                      <SlidersHorizontal />
+                      <span>System Settings</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/admin/reports-analytics" passHref legacyBehavior>
+                    <SidebarMenuButton tooltip="Reports & Analytics" isActive={router.pathname === '/admin/reports-analytics'}>
+                      <BarChart3 />
+                      <span>Reports & Analytics</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/admin/support-troubleshooting" passHref legacyBehavior>
+                    <SidebarMenuButton tooltip="Support & Troubleshooting" isActive={router.pathname === '/admin/support-troubleshooting'}>
+                      <LifeBuoy />
+                      <span>Support</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
