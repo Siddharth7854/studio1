@@ -21,19 +21,8 @@ import { format, differenceInDays, isBefore, startOfDay } from 'date-fns';
 import { suggestLeaveReason } from '@/ai/flows/suggest-leave-reason';
 import { rewordLeaveRequest } from '@/ai/flows/reword-leave-request';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/use-auth'; // Added
-import { useLeave } from '@/contexts/leave-context'; // Added
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { useAuth } from '@/hooks/use-auth'; 
+import { useLeave } from '@/contexts/leave-context'; 
 
 const leaveRequestSchema = z.object({
   leaveTypeId: z.string().min(1, "Leave type is required"),
@@ -44,7 +33,7 @@ const leaveRequestSchema = z.object({
   message: "End date cannot be before start date",
   path: ["endDate"],
 })
-.refine(data => differenceInDays(data.endDate, data.startDate) >= 0, { // Ensure duration is at least 0 for same day
+.refine(data => differenceInDays(data.endDate, data.startDate) >= 0, { 
   message: "Leave duration must be at least one day (select same start/end for one day)",
   path: ["endDate"],
 })
@@ -60,8 +49,8 @@ const LeaveRequestForm: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAiLoading, setIsAiLoading] = useState(''); // 'suggest' or 'reword'
   const { toast } = useToast();
-  const { user } = useAuth(); // Get current user
-  const { submitLeaveRequest } = useLeave(); // Use leave context
+  const { user } = useAuth(); 
+  const { submitLeaveRequest } = useLeave(); 
 
   const { control, handleSubmit, watch, setValue, getValues, reset, formState: { errors } } = useForm<LeaveRequestFormInputs>({
     resolver: zodResolver(leaveRequestSchema),
@@ -148,7 +137,7 @@ const LeaveRequestForm: React.FC = () => {
         description: result.message,
         duration: 5000,
         });
-        reset(); // Reset form fields
+        reset(); 
     } else {
         toast({
             title: "Submission Failed",
@@ -306,35 +295,10 @@ const LeaveRequestForm: React.FC = () => {
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button type="button" variant="default" disabled={isSubmitting || Object.keys(errors).length > 0} className="px-8 py-3 text-base">
-                 {/* Icon will be handled by the button type="submit" below */}
-                 Confirm & Submit Request
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Confirm Leave Request</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to submit this leave request?
-                  <br />
-                  Leave Type: {leaveTypes.find(lt => lt.id === getValues("leaveTypeId"))?.name || 'N/A'}
-                  <br />
-                  Dates: {getValues("startDate") ? format(getValues("startDate"), 'PPP') : 'N/A'} - {getValues("endDate") ? format(getValues("endDate"), 'PPP') : 'N/A'}
-                  <br />
-                  Duration: {calculateDuration()} day(s)
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleSubmit(processSubmit)} disabled={isSubmitting}>
-                  {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4"/>}
-                  {isSubmitting ? 'Submitting...' : 'Submit Request'}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <Button type="submit" variant="default" disabled={isSubmitting || Object.keys(errors).length > 0} className="px-8 py-3 text-base">
+            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4"/>}
+            {isSubmitting ? 'Submitting...' : 'Submit Request'}
+          </Button>
         </CardFooter>
       </form>
     </Card>
@@ -342,3 +306,5 @@ const LeaveRequestForm: React.FC = () => {
 };
 
 export default LeaveRequestForm;
+
+    
