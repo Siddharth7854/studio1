@@ -15,7 +15,7 @@ import { UserPlus, Loader2, Briefcase } from 'lucide-react';
 import type { User } from '@/types';
 
 const createEmployeeSchema = z.object({
-  employeeId: z.string().min(1, "Employee ID is required"),
+  employeeId: z.string().trim().min(1, "Employee ID is required"),
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address").optional().or(z.literal('')),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -49,7 +49,7 @@ const CreateEmployeeForm: React.FC = () => {
     
     const newUser: User = {
       id: '', // Will be set by addUser context function
-      employeeId: data.employeeId,
+      employeeId: data.employeeId, // data.employeeId will be trimmed due to Zod schema
       name: data.name,
       email: data.email || undefined,
       password: data.password, // Password will be handled by AuthContext
