@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle, Settings as SettingsIcon } from 'lucide-react';
+import { LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle, Settings as SettingsIcon, ListChecks } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -103,7 +103,6 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-            {/* Notifications link moved to footer */}
             {user?.isAdmin && (
               <>
                 <SidebarMenuItem>
@@ -119,6 +118,14 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     <SidebarMenuButton tooltip="Manage Leave" isActive={router.pathname === '/admin/manage-leave'}>
                       <ClipboardList />
                       <span>Manage Leave</span>
+                    </SidebarMenuButton>
+                  </Link>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <Link href="/admin/employee-leave-overview" passHref legacyBehavior>
+                    <SidebarMenuButton tooltip="Employee Leave Overview" isActive={router.pathname === '/admin/employee-leave-overview'}>
+                      <ListChecks />
+                      <span>Employee Leaves</span>
                     </SidebarMenuButton>
                   </Link>
                 </SidebarMenuItem>
@@ -149,7 +156,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 <DropdownMenuTrigger asChild>
                   <SidebarMenuButton 
                     tooltip={user.name || "Profile"} 
-                    className="justify-start w-full !h-auto py-2" // Ensure full width and adjust padding
+                    className="justify-start w-full !h-auto py-2" 
                   >
                     <Avatar className="h-7 w-7 group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-6">
                       <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name || "User"} data-ai-hint="avatar person" />

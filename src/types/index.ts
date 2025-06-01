@@ -8,6 +8,7 @@ export interface User {
   designation?: string;
   profilePhotoUrl?: string;
   password?: string;
+  leaveBalances?: LeaveBalance[]; // Added
 }
 
 export interface LeaveType {

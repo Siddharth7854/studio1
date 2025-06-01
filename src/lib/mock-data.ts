@@ -1,6 +1,13 @@
 
 import type { User, LeaveType, LeaveBalance, LeaveRequest, Notification } from '@/types';
 
+export const MOCK_LEAVE_TYPES: LeaveType[] = [
+  { id: 'lt1', name: 'Casual Leave' },
+  { id: 'lt2', name: 'Sick Leave' },
+  { id: 'lt3', name: 'Annual Leave' },
+  { id: 'lt4', name: 'Unpaid Leave' },
+];
+
 export const MOCK_USERS: User[] = [
   { 
     id: '1', 
@@ -10,7 +17,13 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     designation: 'Software Engineer',
     profilePhotoUrl: 'https://placehold.co/100x100.png?text=AW',
-    password: 'password1'
+    password: 'password1',
+    leaveBalances: [
+      { leaveTypeId: 'lt1', leaveTypeName: 'Casual Leave', balance: 10, totalAllocated: 12 },
+      { leaveTypeId: 'lt2', leaveTypeName: 'Sick Leave', balance: 7, totalAllocated: 10 },
+      { leaveTypeId: 'lt3', leaveTypeName: 'Annual Leave', balance: 15, totalAllocated: 20 },
+      { leaveTypeId: 'lt4', leaveTypeName: 'Unpaid Leave', balance: 0, totalAllocated: 5 },
+    ]
   },
   { 
     id: '2', 
@@ -20,7 +33,13 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     designation: 'Project Manager',
     profilePhotoUrl: 'https://placehold.co/100x100.png?text=BB',
-    password: 'password2'
+    password: 'password2',
+    leaveBalances: [
+      { leaveTypeId: 'lt1', leaveTypeName: 'Casual Leave', balance: 8, totalAllocated: 12 },
+      { leaveTypeId: 'lt2', leaveTypeName: 'Sick Leave', balance: 9, totalAllocated: 10 },
+      { leaveTypeId: 'lt3', leaveTypeName: 'Annual Leave', balance: 12, totalAllocated: 20 },
+      { leaveTypeId: 'lt4', leaveTypeName: 'Unpaid Leave', balance: 2, totalAllocated: 5 },
+    ]
   },
   { 
     id: 'admin001', 
@@ -30,18 +49,18 @@ export const MOCK_USERS: User[] = [
     isAdmin: true,
     designation: 'System Administrator',
     profilePhotoUrl: 'https://placehold.co/100x100.png?text=AU',
-    password: 'adminpassword123'
+    password: 'adminpassword123',
+    leaveBalances: [ // Admins can also be employees and have balances
+      { leaveTypeId: 'lt1', leaveTypeName: 'Casual Leave', balance: 12, totalAllocated: 12 },
+      { leaveTypeId: 'lt2', leaveTypeName: 'Sick Leave', balance: 10, totalAllocated: 10 },
+      { leaveTypeId: 'lt3', leaveTypeName: 'Annual Leave', balance: 20, totalAllocated: 20 },
+      { leaveTypeId: 'lt4', leaveTypeName: 'Unpaid Leave', balance: 0, totalAllocated: 5 },
+    ]
   },
 ];
 
-export const MOCK_LEAVE_TYPES: LeaveType[] = [
-  { id: 'lt1', name: 'Casual Leave' },
-  { id: 'lt2', name: 'Sick Leave' },
-  { id: 'lt3', name: 'Annual Leave' },
-  { id: 'lt4', name: 'Unpaid Leave' },
-];
 
-export const MOCK_INITIAL_LEAVE_BALANCES: LeaveBalance[] = [
+export const MOCK_INITIAL_LEAVE_BALANCES: LeaveBalance[] = [ // This is for logged-in user dashboard, distinct from User.leaveBalances
   { leaveTypeId: 'lt1', leaveTypeName: 'Casual Leave', balance: 10, totalAllocated: 12 },
   { leaveTypeId: 'lt2', leaveTypeName: 'Sick Leave', balance: 7, totalAllocated: 10 },
   { leaveTypeId: 'lt3', leaveTypeName: 'Annual Leave', balance: 15, totalAllocated: 20 },
