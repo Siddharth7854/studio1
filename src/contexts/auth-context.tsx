@@ -16,8 +16,9 @@ interface AuthContextType {
   login: (employeeId: string, password?: string) => Promise<boolean>;
   logout: () => void;
   addUser: (newUser: User) => Promise<{ success: boolean; message: string }>;
+  updateUser: (userId: string, updatedData: Partial<User>) => Promise<{ success: boolean; message: string; updatedUser?: User }>;
   isAdmin: boolean;
-  sessionUsers: User[]; // Added sessionUsers to the type
+  sessionUsers: User[];
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,14 +31,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     setIsLoading(true);
-    // Load session users
     const storedSessionUsers = localStorage.getItem(SESSION_USERS_STORAGE_KEY);
     if (storedSessionUsers) {
       try {
         setSessionUsers(JSON.parse(storedSessionUsers));
       } catch (error) {
         console.error("Failed to parse session users from localStorage", error);
-        setSessionUsers(MOCK_USERS); // Fallback to mock users
+        setSessionUsers(MOCK_USERS); 
         localStorage.setItem(SESSION_USERS_STORAGE_KEY, JSON.stringify(MOCK_USERS));
       }
     } else {
@@ -45,7 +45,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem(SESSION_USERS_STORAGE_KEY, JSON.stringify(MOCK_USERS));
     }
 
-    // Load current logged-in user
     const storedCurrentUser = localStorage.getItem(CURRENT_USER_STORAGE_KEY);
     if (storedCurrentUser) {
       try {
@@ -61,21 +60,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (employeeId: string, passwordInput?: string): Promise<boolean> => {
     setIsLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 500)); // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500)); 
 
     const foundUser = sessionUsers.find(u => u.employeeId === employeeId);
 
     if (foundUser) {
-      // For admin users, password must match.
-      // For non-admin mock users, password check is lenient (matches stored or any if not stored).
       const passwordMatches = foundUser.isAdmin 
         ? foundUser.password === passwordInput
         : (foundUser.password ? foundUser.password === passwordInput : true);
 
-
       if (passwordMatches) {
         const userToLogin = { ...foundUser };
-        // Do not store password in the user object set in state or localStorage for the logged-in user
         delete userToLogin.password; 
         setUser(userToLogin);
         localStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(userToLogin));
@@ -83,7 +78,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return true;
       }
     }
-
     setIsLoading(false);
     return false;
   };
@@ -102,10 +96,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const newId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     const userWithId = { ...newUser, id: newId };
 
-    const updatedUsers = [...sessionUsers, userWithId];
-    setSessionUsers(updatedUsers);
-    localStorage.setItem(SESSION_USERS_STORAGE_KEY, JSON.stringify(updatedUsers));
+    const updatedUsersList = [...sessionUsers, userWithId];
+    setSessionUsers(updatedUsersList);
+    localStorage.setItem(SESSION_USERS_STORAGE_KEY, JSON.stringify(updatedUsersList));
     return { success: true, message: "Employee created successfully." };
+  };
+
+  const updateUser = async (userId: string, updatedData: Partial<User>): Promise<{ success: boolean; message: string; updatedUser?: User }> => {
+    const userIndex = sessionUsers.findIndex(u => u.id === userId);
+    if (userIndex === -1) {
+      return { success: false, message: "User not found." };
+    }
+
+    const updatedUsersList = [...sessionUsers];
+    // Merge existing user data with new data. Password will be included here if provided.
+    const fullyUpdatedUserRecord = { ...updatedUsersList[userIndex], ...updatedData };
+    updatedUsersList[userIndex] = fullyUpdatedUserRecord;
+    
+    setSessionUsers(updatedUsersList);
+    localStorage.setItem(SESSION_USERS_STORAGE_KEY, JSON.stringify(updatedUsersList));
+
+    // If the updated user is the currently logged-in user, update their session
+    if (user && user.id === userId) {
+      const userForStateAndSession = { ...fullyUpdatedUserRecord };
+      delete userForStateAndSession.password; // Remove password for client-side state and storage
+
+      setUser(userForStateAndSession);
+      localStorage.setItem(CURRENT_USER_STORAGE_KEY, JSON.stringify(userForStateAndSession));
+      return { success: true, message: "Profile updated successfully.", updatedUser: userForStateAndSession };
+    }
+
+    return { success: true, message: "User data updated.", updatedUser: fullyUpdatedUserRecord }; // This case might be for admin editing others
   };
 
   return (
@@ -115,9 +136,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       isLoading, 
       login, 
       logout, 
-      addUser, 
+      addUser,
+      updateUser,
       isAdmin: !!user?.isAdmin,
-      sessionUsers // Added sessionUsers to the provider value
+      sessionUsers
     }}>
       {children}
     </AuthContext.Provider>

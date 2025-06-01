@@ -20,11 +20,13 @@ import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation'; // Added for programmatic navigation
 
 const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const { getUnreadNotificationCount, isLoading: leaveLoading } = useLeave();
   const isMobile = useIsMobile();
+  const router = useRouter(); // Added
 
   const unreadCount = user && !leaveLoading ? getUnreadNotificationCount(user.id) : 0;
 
@@ -34,6 +36,16 @@ const Navbar: React.FC = () => {
     if (names.length === 1) return names[0][0]?.toUpperCase() || '';
     return (names[0][0]?.toUpperCase() || '') + (names[names.length - 1][0]?.toUpperCase() || '');
   };
+
+  const handleProfileClick = () => {
+    router.push('/profile');
+  };
+  
+  const handleSettingsClick = () => {
+    // Potentially route to a different settings page or another section of profile
+    router.push('/profile'); // For now, also points to profile
+  };
+
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-card shadow-sm">
@@ -70,7 +82,7 @@ const Navbar: React.FC = () => {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-9 w-9 rounded-full">
                   <Avatar className="h-9 w-9">
-                    <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name} data-ai-hint="avatar person" />
+                    <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name || "User"} data-ai-hint="avatar person" />
                     <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -85,11 +97,11 @@ const Navbar: React.FC = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleProfileClick}>
                   <UserCircle className="mr-2 h-4 w-4" />
                   <span>Profile</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleSettingsClick}>
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </DropdownMenuItem>
