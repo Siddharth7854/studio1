@@ -6,16 +6,29 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
 import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList } from 'lucide-react';
+import { LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle, Settings as SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { useLeave } from '@/contexts/leave-context';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, user, logout } = useAuth();
+  const { getUnreadNotificationCount, isLoading: leaveLoading } = useLeave();
   const router = useRouter();
 
   useEffect(() => {
@@ -23,6 +36,23 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       router.push('/login');
     }
   }, [isAuthenticated, isLoading, router]);
+
+  const getInitials = (name: string = "") => {
+    if (!name) return '';
+    const names = name.split(' ');
+    if (names.length === 1) return names[0][0]?.toUpperCase() || '';
+    return (names[0][0]?.toUpperCase() || '') + (names[names.length - 1][0]?.toUpperCase() || '');
+  };
+
+  const handleProfileClick = () => {
+    router.push('/profile');
+  };
+  
+  const handleSettingsClick = () => {
+    router.push('/settings');
+  };
+
+  const unreadCount = user && !leaveLoading ? getUnreadNotificationCount(user.id) : 0;
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -44,8 +74,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   return (
     <SidebarProvider defaultOpen>
-      <Sidebar className="bg-card border-r" collapsible="icon">
-        {/* SidebarHeader is part of Sidebar in the new version. */}
+      <Sidebar className="bg-card border-r flex flex-col" collapsible="icon">
         <div className="p-4 flex items-center gap-2 border-b">
             <Image 
               src="https://placehold.co/32x32.png" 
@@ -56,7 +85,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             />
             <h1 className="text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">CLMS BUIDCO</h1>
         </div>
-        <SidebarContent>
+        <SidebarContent className="flex-grow">
           <SidebarMenu>
             <SidebarMenuItem>
               <Link href="/dashboard" passHref legacyBehavior>
@@ -74,14 +103,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/notifications" passHref legacyBehavior>
-                <SidebarMenuButton tooltip="Notifications" isActive={router.pathname === '/notifications'}>
-                  <Bell />
-                  <span>Notifications</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
+            {/* Notifications link moved to footer */}
             {user?.isAdmin && (
               <>
                 <SidebarMenuItem>
@@ -104,6 +126,72 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             )}
           </SidebarMenu>
         </SidebarContent>
+
+        {/* Footer section for Notifications and User Profile */}
+        <div className="mt-auto border-t border-sidebar-border p-2">
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <Link href="/notifications" passHref legacyBehavior>
+                <SidebarMenuButton tooltip="Notifications" isActive={router.pathname === '/notifications'} className="relative">
+                  <Bell />
+                  <span className="group-data-[collapsible=icon]:hidden">Notifications</span>
+                  {unreadCount > 0 && (
+                    <Badge variant="destructive" className="absolute top-1 right-1 h-4 w-4 p-0 flex items-center justify-center text-xs group-data-[collapsible=icon]:top-0 group-data-[collapsible=icon]:right-0">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </Badge>
+                  )}
+                </SidebarMenuButton>
+              </Link>
+            </SidebarMenuItem>
+            {user && (
+            <SidebarMenuItem>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <SidebarMenuButton 
+                    tooltip={user.name || "Profile"} 
+                    className="justify-start w-full !h-auto py-2" // Ensure full width and adjust padding
+                  >
+                    <Avatar className="h-7 w-7 group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-6">
+                      <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name || "User"} data-ai-hint="avatar person" />
+                      <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                    </Avatar>
+                    <div className="ml-2 flex flex-col items-start group-data-[collapsible=icon]:hidden">
+                      <span className="text-sm font-medium leading-none">{user.name}</span>
+                      <span className="text-xs leading-none text-muted-foreground group-data-[collapsible=icon]:hidden">
+                        {user.employeeId}
+                      </span>
+                    </div>
+                  </SidebarMenuButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent side="top" align="start" className="w-56 mb-1 ml-1">
+                  <DropdownMenuLabel className="font-normal">
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.employeeId}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleProfileClick}>
+                    <UserCircle className="mr-2 h-4 w-4" />
+                    <span>Profile</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSettingsClick}>
+                    <SettingsIcon className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={logout}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Log out</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </SidebarMenuItem>
+            )}
+          </SidebarMenu>
+        </div>
       </Sidebar>
       <SidebarInset>
         <div className="flex flex-col min-h-screen">
