@@ -12,7 +12,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus, Loader2, Briefcase } from 'lucide-react';
-import type { User } from '@/types';
+import type { User, LeaveBalance } from '@/types';
+import { MOCK_LEAVE_TYPES } from '@/lib/mock-data'; // Import MOCK_LEAVE_TYPES
 
 const createEmployeeSchema = z.object({
   employeeId: z.string().trim().min(1, "Employee ID is required"),
@@ -47,15 +48,33 @@ const CreateEmployeeForm: React.FC = () => {
   const onSubmit: SubmitHandler<CreateEmployeeFormInputs> = async (data) => {
     setIsSubmitting(true);
     
+    const initialLeaveBalances: LeaveBalance[] = MOCK_LEAVE_TYPES.map(lt => {
+      if (lt.id === 'lt1') { // Casual Leave
+        return { leaveTypeId: lt.id, leaveTypeName: lt.name, balance: 12, totalAllocated: 12 };
+      }
+      if (lt.id === 'lt2') { // Sick Leave - Example default
+        return { leaveTypeId: lt.id, leaveTypeName: lt.name, balance: 10, totalAllocated: 10 };
+      }
+      if (lt.id === 'lt3') { // Annual Leave - Example default
+        return { leaveTypeId: lt.id, leaveTypeName: lt.name, balance: 20, totalAllocated: 20 };
+      }
+      if (lt.id === 'lt4') { // Unpaid Leave - Example default
+        return { leaveTypeId: lt.id, leaveTypeName: lt.name, balance: 0, totalAllocated: 5 };
+      }
+      // Fallback for any other leave types, though unlikely with current MOCK_LEAVE_TYPES
+      return { leaveTypeId: lt.id, leaveTypeName: lt.name, balance: 0, totalAllocated: 0 };
+    });
+
     const newUser: User = {
-      id: '', // Will be set by addUser context function
-      employeeId: data.employeeId, // data.employeeId will be trimmed due to Zod schema
+      id: '', 
+      employeeId: data.employeeId, 
       name: data.name,
       email: data.email || undefined,
-      password: data.password, // Password will be handled by AuthContext
+      password: data.password, 
       designation: data.designation,
       profilePhotoUrl: data.profilePhotoUrl || `https://placehold.co/100x100.png?text=${data.name.substring(0,2).toUpperCase()}`,
       isAdmin: data.isAdmin,
+      leaveBalances: initialLeaveBalances, // Add initial leave balances
     };
 
     const result = await addUser(newUser);
@@ -65,7 +84,7 @@ const CreateEmployeeForm: React.FC = () => {
         title: "Employee Created",
         description: result.message,
       });
-      reset(); // Reset form fields
+      reset(); 
     } else {
       toast({
         title: "Error",
@@ -159,3 +178,5 @@ const CreateEmployeeForm: React.FC = () => {
 };
 
 export default CreateEmployeeForm;
+
+    
