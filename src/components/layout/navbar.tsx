@@ -15,18 +15,7 @@ const Navbar: React.FC = () => {
       <div className="container flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-2">
            <SidebarTrigger className="md:hidden" />
-          {!isMobile && (
-            <Link href="/dashboard" className="flex items-center gap-2">
-              <Image 
-                src="https://placehold.co/28x28.png" 
-                alt="CLMS BUIDCO Logo" 
-                width={28} 
-                height={28}
-                data-ai-hint="logo buidco" 
-              />
-              <span className="text-xl font-semibold text-primary">CLMS BUIDCO</span>
-            </Link>
-          )}
+          {/* The logo and text for desktop view, which was here, has been removed. */}
         </div>
         
         {/* Notification bell and profile menu have been moved to the sidebar footer */}
