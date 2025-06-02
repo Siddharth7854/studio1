@@ -23,13 +23,12 @@ export default function HomePage() {
   return (
     <div className="flex h-screen items-center justify-center bg-background">
       <div className="flex flex-col items-center">
-        <Image 
-          src="https://placehold.co/80x80.png" 
-          alt="CLMS BUIDCO Logo" 
-          width={80} 
-          height={80} 
+        <Image
+          src="/images/buidco-logo.png"
+          alt="CLMS BUIDCO Logo"
+          width={64}
+          height={64}
           className="animate-pulse"
-          data-ai-hint="logo buidco" 
         />
         <p className="mt-6 text-2xl font-semibold text-primary">CLMS BUIDCO</p>
         <p className="mt-2 text-muted-foreground">Redirecting...</p>

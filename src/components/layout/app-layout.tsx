@@ -5,9 +5,9 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
-import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { 
-  LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle, 
+import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SheetTitle } from '@/components/ui/sidebar';
+import {
+  LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle,
   Settings as SettingsIcon, ListChecks, SlidersHorizontal, BarChart3, LifeBuoy, BookOpen
 } from 'lucide-react';
 import Link from 'next/link';
@@ -50,7 +50,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const handleProfileClick = () => {
     router.push('/profile');
   };
-  
+
   const handleSettingsClick = () => {
     router.push('/settings');
   };
@@ -61,13 +61,12 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center">
-          <Image 
-            src="https://placehold.co/64x64.png" 
-            alt="CLMS BUIDCO Logo" 
-            width={64} 
-            height={64} 
+          <Image
+            src="/images/buidco-logo.png"
+            alt="CLMS BUIDCO Logo"
+            width={64}
+            height={64}
             className="animate-pulse"
-            data-ai-hint="logo buidco" 
           />
           <p className="mt-4 text-lg font-medium text-foreground">Loading CLMS BUIDCO...</p>
         </div>
@@ -78,13 +77,13 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <SidebarProvider defaultOpen>
       <Sidebar className="bg-card border-r flex flex-col" collapsible="icon">
+      <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
         <div className="p-4 flex items-center gap-2 border-b">
-            <Image 
-              src="https://placehold.co/32x32.png" 
-              alt="CLMS BUIDCO Logo" 
-              width={32} 
+            <Image
+              src="/images/buidco-logo.png"
+              alt="CLMS BUIDCO Logo"
+              width={32}
               height={32}
-              data-ai-hint="logo buidco" 
             />
             <h1 className="text-xl font-semibold text-primary group-data-[collapsible=icon]:hidden">CLMS BUIDCO</h1>
         </div>
@@ -189,9 +188,9 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton 
-                    tooltip={user.name || "Profile"} 
-                    className="justify-start w-full !h-auto py-2" 
+                  <SidebarMenuButton
+                    tooltip={user.name || "Profile"}
+                    className="justify-start w-full !h-auto py-2"
                   >
                     <Avatar className="h-7 w-7 group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-6">
                       <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name || "User"} data-ai-hint="avatar person" />

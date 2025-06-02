@@ -55,12 +55,11 @@ const LoginForm: React.FC = () => {
     <Card className="w-full max-w-md shadow-xl">
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
-          <Image 
-            src="https://placehold.co/64x64.png" 
-            alt="CLMS BUIDCO Logo" 
-            width={64} 
+          <Image
+            src="/images/buidco-logo.png"
+            alt="CLMS BUIDCO Logo"
+            width={64}
             height={64}
-            data-ai-hint="logo buidco" 
           />
         </div>
         <CardTitle className="text-3xl font-headline text-primary">CLMS BUIDCO</CardTitle>
