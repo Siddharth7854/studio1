@@ -58,8 +58,8 @@ const LoginForm: React.FC = () => {
           <Image
             src="/images/buidco-logo.png"
             alt="CLMS BUIDCO Logo"
-            width={64}
-            height={64}
+            width={50}
+            height={50}
           />
         </div>
         <CardTitle className="text-3xl font-headline text-primary">CLMS BUIDCO</CardTitle>

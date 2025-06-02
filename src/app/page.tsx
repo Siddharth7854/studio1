@@ -26,8 +26,8 @@ export default function HomePage() {
         <Image
           src="/images/buidco-logo.png"
           alt="CLMS BUIDCO Logo"
-          width={64}
-          height={64}
+          width={50}
+          height={50}
           className="animate-pulse"
         />
         <p className="mt-6 text-2xl font-semibold text-primary">CLMS BUIDCO</p>
