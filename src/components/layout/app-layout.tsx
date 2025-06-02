@@ -5,7 +5,7 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
 import Navbar from '@/components/layout/navbar';
-import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton, SheetTitle } from '@/components/ui/sidebar';
+import { SidebarProvider, Sidebar, SidebarInset, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import {
   LayoutDashboard, CalendarPlus, Bell, UserPlus, ClipboardList, LogOut, UserCircle,
   Settings as SettingsIcon, ListChecks, SlidersHorizontal, BarChart3, LifeBuoy, BookOpen
@@ -77,7 +77,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   return (
     <SidebarProvider defaultOpen>
       <Sidebar className="bg-card border-r flex flex-col" collapsible="icon">
-      <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
+      {/* The SheetTitle is handled internally by the Sidebar component for mobile view */}
         <div className="p-4 flex items-center gap-2 border-b">
             <Image
               src="/images/buidco-logo.png"
@@ -193,7 +193,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                     className="justify-start w-full !h-auto py-2"
                   >
                     <Avatar className="h-7 w-7 group-data-[collapsible=icon]:h-6 group-data-[collapsible=icon]:w-6">
-                      <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name || "User"} data-ai-hint="avatar person" />
+                      <AvatarImage src={user.profilePhotoUrl || `https://placehold.co/100x100.png?text=${getInitials(user.name)}`} alt={user.name || "User"} />
                       <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
                     </Avatar>
                     <div className="ml-2 flex flex-col items-start group-data-[collapsible=icon]:hidden">
@@ -247,3 +247,5 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 };
 
 export default AppLayout;
+
+    
