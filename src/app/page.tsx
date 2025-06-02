@@ -24,7 +24,7 @@ export default function HomePage() {
     <div className="flex h-screen items-center justify-center bg-background">
       <div className="flex flex-col items-center">
         <Image
-          src="/images/buidco-logo.png"
+          src="https://upload.wikimedia.org/wikipedia/en/5/52/BUIDCO_logo.jpg"
           alt="CLMS BUIDCO Logo"
           width={50}
           height={50}

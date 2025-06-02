@@ -56,7 +56,7 @@ const LoginForm: React.FC = () => {
       <CardHeader className="text-center">
         <div className="flex justify-center mb-4">
           <Image
-            src="/images/buidco-logo.png"
+            src="https://upload.wikimedia.org/wikipedia/en/5/52/BUIDCO_logo.jpg"
             alt="CLMS BUIDCO Logo"
             width={50}
             height={50}
