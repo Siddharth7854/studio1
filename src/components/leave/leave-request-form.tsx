@@ -16,10 +16,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { MOCK_LEAVE_TYPES } from '@/lib/mock-data';
 import type { LeaveType } from '@/types';
 import { cn } from '@/lib/utils';
-import { CalendarIcon, Sparkles, Wand2, Send, Loader2 } from 'lucide-react';
+import { CalendarIcon, Send, Loader2 } from 'lucide-react';
 import { format, differenceInDays, isBefore, startOfDay } from 'date-fns';
-import { suggestLeaveReason } from '@/ai/flows/suggest-leave-reason';
-import { rewordLeaveRequest } from '@/ai/flows/reword-leave-request';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/use-auth'; 
 import { useLeave } from '@/contexts/leave-context'; 
@@ -47,12 +45,11 @@ type LeaveRequestFormInputs = z.infer<typeof leaveRequestSchema>;
 const LeaveRequestForm: React.FC = () => {
   const [leaveTypes, setLeaveTypes] = useState<LeaveType[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAiLoading, setIsAiLoading] = useState(''); // 'suggest' or 'reword'
   const { toast } = useToast();
   const { user } = useAuth(); 
   const { submitLeaveRequest } = useLeave(); 
 
-  const { control, handleSubmit, watch, setValue, getValues, reset, formState: { errors } } = useForm<LeaveRequestFormInputs>({
+  const { control, handleSubmit, watch, reset, formState: { errors } } = useForm<LeaveRequestFormInputs>({
     resolver: zodResolver(leaveRequestSchema),
     defaultValues: {
       reason: "",
@@ -69,44 +66,6 @@ const LeaveRequestForm: React.FC = () => {
     setLeaveTypes(MOCK_LEAVE_TYPES);
   }, []);
   
-  const handleSuggestReason = async () => {
-    const currentReason = getValues("reason");
-    if (!currentReason.trim()) {
-      toast({ title: "Input Required", description: "Please type a brief idea for your leave first.", variant: "default" });
-      return;
-    }
-    setIsAiLoading('suggest');
-    try {
-      const result = await suggestLeaveReason({ userInput: currentReason });
-      setValue("reason", result.suggestedReason, { shouldValidate: true });
-      toast({ title: "AI Suggestion Applied", description: "Reason updated with AI suggestion." });
-    } catch (error) {
-      console.error("AI suggestion error:", error);
-      toast({ title: "AI Error", description: "Could not get AI suggestion.", variant: "destructive" });
-    } finally {
-      setIsAiLoading('');
-    }
-  };
-
-  const handleRewordReason = async () => {
-    const currentReason = getValues("reason");
-    if (!currentReason.trim()) {
-      toast({ title: "Input Required", description: "Please write a reason to reword.", variant: "default" });
-      return;
-    }
-    setIsAiLoading('reword');
-    try {
-      const result = await rewordLeaveRequest({ leaveRequest: currentReason });
-      setValue("reason", result.rewordedRequest, { shouldValidate: true });
-      toast({ title: "AI Rewording Applied", description: "Reason reworded by AI." });
-    } catch (error) {
-      console.error("AI rewording error:", error);
-      toast({ title: "AI Error", description: "Could not reword reason.", variant: "destructive" });
-    } finally {
-      setIsAiLoading('');
-    }
-  };
-
   const processSubmit: SubmitHandler<LeaveRequestFormInputs> = async (data) => {
     if (!user) {
         toast({ title: "Error", description: "You must be logged in to submit a request.", variant: "destructive" });
@@ -162,7 +121,7 @@ const LeaveRequestForm: React.FC = () => {
           <CalendarIcon className="h-7 w-7 text-primary" />
           Request Leave
         </CardTitle>
-        <CardDescription>Fill out the form below to submit your leave request. Use our AI tools to help craft your reason!</CardDescription>
+        <CardDescription>Fill out the form below to submit your leave request.</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(processSubmit)}>
         <CardContent className="space-y-6">
@@ -282,16 +241,6 @@ const LeaveRequestForm: React.FC = () => {
               )}
             />
             {errors.reason && <p className="text-sm text-destructive mt-1">{errors.reason.message}</p>}
-             <div className="mt-2 flex flex-col sm:flex-row gap-2">
-              <Button type="button" variant="outline" onClick={handleSuggestReason} disabled={isAiLoading !== ''} className="flex-1">
-                {isAiLoading === 'suggest' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                AI Suggest Reason
-              </Button>
-              <Button type="button" variant="outline" onClick={handleRewordReason} disabled={isAiLoading !== ''} className="flex-1">
-                {isAiLoading === 'reword' ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-4 w-4" />}
-                AI Reword Reason
-              </Button>
-            </div>
           </div>
         </CardContent>
         <CardFooter className="flex justify-end">
@@ -306,5 +255,3 @@ const LeaveRequestForm: React.FC = () => {
 };
 
 export default LeaveRequestForm;
-
-    
