@@ -64,8 +64,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           <Image
             src="https://upload.wikimedia.org/wikipedia/en/5/52/BUIDCO_logo.jpg"
             alt="CLMS BUIDCO Logo"
-            width={64} // Default size for loading screen, can adjust if needed
-            height={64}
+            width={50} 
+            height={50}
             className="animate-pulse"
           />
           <p className="mt-4 text-lg font-medium text-foreground">Loading CLMS BUIDCO...</p>
@@ -96,14 +96,16 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 </SidebarMenuButton>
               </Link>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <Link href="/request-leave" passHref legacyBehavior>
-                <SidebarMenuButton tooltip="Request Leave" isActive={router.pathname === '/request-leave'}>
-                  <CalendarPlus />
-                  <span>Request Leave</span>
-                </SidebarMenuButton>
-              </Link>
-            </SidebarMenuItem>
+            {!user?.isAdmin && (
+              <SidebarMenuItem>
+                <Link href="/request-leave" passHref legacyBehavior>
+                  <SidebarMenuButton tooltip="Request Leave" isActive={router.pathname === '/request-leave'}>
+                    <CalendarPlus />
+                    <span>Request Leave</span>
+                  </SidebarMenuButton>
+                </Link>
+              </SidebarMenuItem>
+            )}
             <SidebarMenuItem>
               <Link href="/company-policies" passHref legacyBehavior>
                 <SidebarMenuButton tooltip="Company Policies" isActive={router.pathname === '/company-policies'}>
