@@ -48,7 +48,7 @@ export default function DashboardPage({ searchParams }: DashboardPageProps) {
           </div>
           <div className="lg:col-span-2 space-y-8">
             {user?.isAdmin && (
-              <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out">
+              <Card className="shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 ease-in-out">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-xl font-headline">
                     <ClipboardList className="h-6 w-6 text-primary" />
@@ -77,3 +77,4 @@ export default function DashboardPage({ searchParams }: DashboardPageProps) {
     </AppLayout>
   );
 }
+

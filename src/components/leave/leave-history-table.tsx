@@ -51,7 +51,7 @@ const LeaveHistoryTable: React.FC<LeaveHistoryTableProps> = ({ requests }) => {
     );
   }
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 ease-in-out">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl font-headline">
           <History className="h-6 w-6 text-primary" />
@@ -93,3 +93,4 @@ const LeaveHistoryTable: React.FC<LeaveHistoryTableProps> = ({ requests }) => {
 };
 
 export default LeaveHistoryTable;
+

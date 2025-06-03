@@ -29,7 +29,7 @@ const LeaveBalanceCard: React.FC<LeaveBalanceCardProps> = ({ balances }) => {
   }
 
   return (
-    <Card className="shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <Card className="shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-300 ease-in-out">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-xl font-headline">
            <WalletCards className="h-6 w-6 text-primary" />
@@ -59,3 +59,4 @@ const LeaveBalanceCard: React.FC<LeaveBalanceCardProps> = ({ balances }) => {
 };
 
 export default LeaveBalanceCard;
+
